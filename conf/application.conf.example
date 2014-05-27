@@ -1,0 +1,42 @@
+# This is the main configuration file for the application.
+# ~~~~~
+
+# Secret key
+# ~~~~~
+# The secret key is used to secure cryptographics functions.
+# If you deploy your application to several instances be sure to use the same key!
+application.secret="Lbm494xL33EF[DHW0MNbeA9lJ;Zwn=w2HB?2Kxo;OrYd^QRR=LRhL]2qAs^o`4IR"
+
+# The application languages
+# ~~~~~
+application.langs="en"
+
+# Global object class
+# ~~~~~
+# Define the Global object class for this application.
+# Default to Global in the root package.
+application.global=global.de.slevermann.tvdb.global.Global
+
+# Logger
+# ~~~~~
+# You can also configure logback (http://logback.qos.ch/),
+# by providing an application-logger.xml file in the conf directory.
+
+# Root logger:
+logger.root=ERROR
+
+# Logger used by the framework:
+logger.play=INFO
+
+# Logger provided to your application:
+logger.application=DEBUG
+
+# TVDB API Key
+tvdb.api.mirror="http://www.thetvdb.com/api/"
+tvdb.api.key=
+
+# Database settings
+db.default.driver=org.h2.Driver
+db.default.url="jdbc:h2:mem:play"
+db.default.jndiName=DefaultDS
+jpa.default=defaultPersistenceUnit
