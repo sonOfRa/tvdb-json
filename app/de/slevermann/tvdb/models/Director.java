@@ -37,6 +37,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * Created by simon on 28.05.2014.
@@ -44,6 +46,7 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
 public class Director {
 	@Id
 	@GeneratedValue
