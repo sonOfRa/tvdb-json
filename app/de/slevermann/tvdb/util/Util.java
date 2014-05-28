@@ -30,9 +30,25 @@
 
 package de.slevermann.tvdb.util;
 
+import de.slevermann.tvdb.models.Episode;
+import de.slevermann.tvdb.models.Genre;
+import de.slevermann.tvdb.models.Person;
+import de.slevermann.tvdb.models.Series;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import play.Logger;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -69,4 +85,140 @@ public class Util {
 	public static List<String> unPipeStringList(String pipedList) {
 		return Arrays.asList(pipedList.split("\\|")).parallelStream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
 	}
+
+	/**
+	 * Attempts to create a Series object from an inputstream.
+	 *
+	 * @param xmlStream
+	 * @return
+	 */
+	public static Series seriesFromXml(InputStream xmlStream) {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		try {
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(xmlStream);
+			NodeList seriesNodes = doc.getElementsByTagName("Series");
+			Series series;
+			if (seriesNodes.getLength() != 0) {
+				Node seriesNode = seriesNodes.item(0);
+				NodeList seriesChildren = seriesNode.getChildNodes();
+				series = parseSeries(seriesChildren);
+			} else {
+				return null;
+			}
+
+			NodeList episodeNodes = doc.getElementsByTagName("Episode");
+			List<Episode> episodes = new ArrayList<>();
+			series.setEpisodes(episodes);
+			for (int i = 0; i < episodeNodes.getLength(); i++) {
+				Node episodeNode = episodeNodes.item(i);
+				NodeList episodeChildren = episodeNode.getChildNodes();
+				episodes.add(parseEpisode(episodeChildren));
+			}
+			return series;
+		} catch (ParserConfigurationException e) {
+			Logger.error("Serious configuration error:", e);
+			return null;
+		} catch (SAXException e) {
+			Logger.error("SAX Problem:", e);
+			return null;
+		} catch (IOException e) {
+			Logger.error("IOException while parsing:", e);
+			return null;
+		} catch (NumberFormatException e) {
+			Logger.error("Tried to parse invalid number", e);
+			return null;
+		}
+	}
+
+	private static Episode parseEpisode(NodeList episodeChildren) {
+		Episode episode = new Episode();
+		for (int i = 0; i < episodeChildren.getLength(); i++) {
+			Node episodeChild = episodeChildren.item(i);
+			String childValue = episodeChild.getTextContent().replaceAll("\\s+", " ");
+			switch (episodeChild.getNodeName()) {
+				case "id":
+					episode.setTvdbId(Long.parseLong(childValue));
+					break;
+				case "Director":
+					episode.setDirectors(namesToPersons(unPipeStringList(childValue)));
+					break;
+				case "GuestStars":
+					episode.setGuestStars(namesToPersons(unPipeStringList(childValue)));
+					break;
+				case "IMDB_ID":
+					episode.setImdbId(childValue);
+					break;
+				case "Language":
+					episode.setLanguage(childValue);
+					break;
+				case "Overview":
+					episode.setOverview(childValue);
+					break;
+				case "Writer":
+					episode.setWriters(namesToPersons(unPipeStringList(childValue)));
+					break;
+				case "filename":
+					episode.setThumbFilename(childValue);
+					break;
+				case "lastupdated":
+					episode.setLastUpdated(new Date(Long.parseLong(childValue) * 1000));
+					break;
+				case "thumb_height":
+					episode.setThumbnailHeight(Integer.parseInt(childValue));
+					break;
+				case "thumb_width":
+					episode.setThumbnailWidth(Integer.parseInt(childValue));
+					break;
+			}
+		}
+		return episode;
+	}
+
+	private static Series parseSeries(NodeList seriesChildren) {
+		Series series = new Series();
+		for (int i = 0; i < seriesChildren.getLength(); i++) {
+			Node seriesChild = seriesChildren.item(i);
+			String childValue = seriesChild.getTextContent().replaceAll("\\s+", " ");
+			switch (seriesChild.getNodeName()) {
+				case "id":
+					series.setTvdbId(Long.parseLong(childValue));
+					break;
+				case "Actors":
+					series.setActors(namesToPersons(unPipeStringList(childValue)));
+					break;
+				case "Genre":
+					series.setGenres(namesToGenres(unPipeStringList(childValue)));
+					break;
+				case "IMDB_ID":
+					series.setImdbId(childValue);
+					break;
+				case "Overview":
+					series.setOverview(childValue);
+					break;
+				case "SeriesName":
+					series.setName(childValue);
+					break;
+				case "banner":
+					series.setBannerFilename(childValue);
+					break;
+				case "Language":
+					series.setLanguage(childValue);
+					break;
+				case "lastupdated":
+					series.setLastUpdated(new Date(Long.parseLong(childValue) * 1000));
+					break;
+			}
+		}
+		return series;
+	}
+
+	private static List<Person> namesToPersons(List<String> names) {
+		return names.parallelStream().map(Person::new).collect(Collectors.toList());
+	}
+
+	private static List<Genre> namesToGenres(List<String> names) {
+		return names.parallelStream().map(Genre::new).collect(Collectors.toList());
+	}
+
 }

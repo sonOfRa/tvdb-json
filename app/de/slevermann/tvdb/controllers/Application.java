@@ -30,6 +30,12 @@
 
 package de.slevermann.tvdb.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.slevermann.tvdb.models.Series;
+import de.slevermann.tvdb.util.Util;
+import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -40,5 +46,18 @@ public class Application extends Controller {
 
 	public static Result index() {
 		return ok();
+	}
+
+	@Transactional
+	public static Result stargate() {
+		Series stargate = Util.seriesFromXml(Application.class.getResourceAsStream("/META-INF/all.xml"));
+		ObjectMapper mapper = new ObjectMapper();
+		JPA.em().persist(stargate);
+		try {
+			String result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(stargate);
+			return ok(result);
+		} catch (JsonProcessingException e) {
+			return internalServerError();
+		}
 	}
 }

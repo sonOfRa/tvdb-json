@@ -30,6 +30,7 @@
 
 package de.slevermann.tvdb.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -47,7 +48,12 @@ public class Person {
 
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private Long id;
 
 	private String name;
+
+	public Person(String name) {
+		this.name = name;
+	}
 }

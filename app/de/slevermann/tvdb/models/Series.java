@@ -30,8 +30,11 @@
 
 package de.slevermann.tvdb.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -61,15 +64,19 @@ public class Series {
 
 	private String language;
 
+	@JsonIgnore
 	private long tvdbId;
 
 	@OneToMany
+	@Cascade(CascadeType.PERSIST)
 	private List<Episode> episodes;
 
 	@OneToMany
+	@Cascade(CascadeType.PERSIST)
 	private List<Person> actors;
 
 	@OneToMany
+	@Cascade(CascadeType.PERSIST)
 	private List<Genre> genres;
 
 	@Lob

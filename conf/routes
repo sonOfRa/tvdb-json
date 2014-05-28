@@ -1,3 +1,4 @@
 GET        /                de.slevermann.tvdb.controllers.Application.index()
 GET        /create          de.slevermann.tvdb.controllers.EpisodeController.testEpisode()
 GET        /episodes        de.slevermann.tvdb.controllers.EpisodeController.bla()
+GET        /stargate                de.slevermann.tvdb.controllers.Application.stargate()
