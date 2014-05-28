@@ -85,7 +85,7 @@ public class Util {
 	 * @return list containing the strings without pipes
 	 */
 	public static List<String> unPipeStringList(String pipedList) {
-		return Arrays.asList(pipedList.split("\\|")).parallelStream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
+		return Arrays.asList(pipedList.split("\\|")).parallelStream().filter(s -> (!s.isEmpty() || s.length() == 1)).collect(Collectors.toList());
 	}
 
 	/**
