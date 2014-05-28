@@ -45,7 +45,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Episode representation
@@ -74,16 +74,13 @@ public class Episode {
 	private String episodeName;
 
 	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Actor> guestStars;
+	private Set<Actor> guestStars;
 
 	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Writer> writers;
+	private Set<Writer> writers;
 
 	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Director> directors;
+	private Set<Director> directors;
 
 	@Lob
 	private String overview;

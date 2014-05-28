@@ -47,6 +47,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -70,16 +71,13 @@ public class Series {
 	private long tvdbId;
 
 	@OneToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Episode> episodes;
+	private Set<Episode> episodes;
 
 	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Actor> actors;
+	private Set<Actor> actors;
 
 	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Genre> genres;
+	private Set<Genre> genres;
 
 	@Lob
 	private String overview;

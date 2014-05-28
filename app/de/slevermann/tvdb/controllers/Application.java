@@ -52,7 +52,7 @@ public class Application extends Controller {
 	public static Result stargate() {
 		Series stargate = Util.seriesFromXml(Application.class.getResourceAsStream("/META-INF/all.xml"));
 		ObjectMapper mapper = new ObjectMapper();
-		JPA.em().persist(stargate);
+		Util.persistSeries(stargate);
 		try {
 			String result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(stargate);
 			return ok(result);

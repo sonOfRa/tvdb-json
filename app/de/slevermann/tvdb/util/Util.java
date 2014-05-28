@@ -41,7 +41,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import play.Logger;
+import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,10 +53,11 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -110,7 +114,7 @@ public class Util {
 			}
 
 			NodeList episodeNodes = doc.getElementsByTagName("Episode");
-			List<Episode> episodes = new ArrayList<>();
+			Set<Episode> episodes = new HashSet<>();
 			series.setEpisodes(episodes);
 			for (int i = 0; i < episodeNodes.getLength(); i++) {
 				Node episodeNode = episodeNodes.item(i);
@@ -215,21 +219,40 @@ public class Util {
 		return series;
 	}
 
-	private static List<Actor> namesToActors(List<String> names) {
-		return names.parallelStream().map(Actor::new).collect(Collectors.toList());
+	private static Set<Actor> namesToActors(List<String> names) {
+		return names.parallelStream().map(Actor::new).collect(Collectors.toSet());
 	}
 
-	private static List<Writer> namesToWriters(List<String> names) {
-		return names.parallelStream().map(Writer::new).collect(Collectors.toList());
+	private static Set<Writer> namesToWriters(List<String> names) {
+		return names.parallelStream().map(Writer::new).collect(Collectors.toSet());
 	}
 
-	private static List<Director> namesToDirectors(List<String> names) {
-		return names.parallelStream().map(Director::new).collect(Collectors.toList());
+	private static Set<Director> namesToDirectors(List<String> names) {
+		return names.parallelStream().map(Director::new).collect(Collectors.toSet());
 	}
 
 
-	private static List<Genre> namesToGenres(List<String> names) {
-		return names.parallelStream().map(Genre::new).collect(Collectors.toList());
+	private static Set<Genre> namesToGenres(List<String> names) {
+		return names.parallelStream().map(Genre::new).collect(Collectors.toSet());
 	}
 
+	@Transactional
+	public static void persistSeries(Series series) {
+		EntityManager em = JPA.em();
+		Set<Episode> episodes = series.getEpisodes();
+		Set<Actor> actors = new HashSet<>(series.getActors());
+		Set<Director> directors = new HashSet<>();
+		Set<Writer> writers = new HashSet<>();
+		for (Episode ep : episodes) {
+			actors.addAll(ep.getGuestStars());
+			directors.addAll(ep.getDirectors());
+			writers.addAll(ep.getWriters());
+		}
+
+		actors.forEach(em::merge);
+		writers.forEach(em::merge);
+		directors.forEach(em::merge);
+		episodes.forEach(em::merge);
+		em.merge(series);
+	}
 }
