@@ -39,6 +39,7 @@ import org.hibernate.annotations.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -74,15 +75,18 @@ public class Episode {
 	private String episodeName;
 
 	@OneToMany
+	@JoinColumn(name="GUEST_ID")
 	@Cascade(CascadeType.PERSIST)
 	private List<Person> guestStars;
 
 	@OneToMany
+	@JoinColumn(name="WRITER_ID")
 	@Cascade(CascadeType.PERSIST)
 	private List<Person> writers;
 
 	@OneToMany
 	@Cascade(CascadeType.PERSIST)
+	@JoinColumn(name="DIRECTOR_ID")
 	private List<Person> directors;
 
 	@Lob
