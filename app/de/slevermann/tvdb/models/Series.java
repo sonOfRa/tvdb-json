@@ -69,17 +69,17 @@ public class Series {
 	private long tvdbId;
 
 	@OneToMany
-	@JoinColumn(name="EPISODE_ID")
+	@JoinColumn(name="id")
 	@Cascade(CascadeType.PERSIST)
 	private List<Episode> episodes;
 
 	@OneToMany
-	@JoinColumn(name="ACTOR_ID")
+	@JoinColumn(name="id")
 	@Cascade(CascadeType.PERSIST)
 	private List<Person> actors;
 
 	@OneToMany
-	@JoinColumn(name="GENRE_ID")
+	@JoinColumn(name="id")
 	@Cascade(CascadeType.PERSIST)
 	private List<Genre> genres;
 

@@ -75,18 +75,18 @@ public class Episode {
 	private String episodeName;
 
 	@OneToMany
-	@JoinColumn(name="GUEST_ID")
+	@JoinColumn(name="id")
 	@Cascade(CascadeType.PERSIST)
 	private List<Person> guestStars;
 
 	@OneToMany
-	@JoinColumn(name="WRITER_ID")
+	@JoinColumn(name="id")
 	@Cascade(CascadeType.PERSIST)
 	private List<Person> writers;
 
 	@OneToMany
 	@Cascade(CascadeType.PERSIST)
-	@JoinColumn(name="DIRECTOR_ID")
+	@JoinColumn(name="id")
 	private List<Person> directors;
 
 	@Lob
