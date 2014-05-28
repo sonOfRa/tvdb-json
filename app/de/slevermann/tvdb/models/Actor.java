@@ -39,12 +39,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
- * Person entity for actors, directors, writers etc
+ * Created by simon on 28.05.2014.
  */
 @Data
 @NoArgsConstructor
 @Entity
-public class Person {
+public class Actor {
 
 	@Id
 	@GeneratedValue
@@ -53,7 +53,8 @@ public class Person {
 
 	private String name;
 
-	public Person(String name) {
+	public Actor(String name) {
 		this.name = name;
 	}
+
 }

@@ -33,70 +33,28 @@ package de.slevermann.tvdb.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import java.util.Date;
-import java.util.List;
 
 /**
- * Episode representation
+ * Created by simon on 28.05.2014.
  */
 @Data
 @NoArgsConstructor
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"tvdbId", "language"})})
-public class Episode {
+public class Writer {
 
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private Long id;
 
-	private String language;
+	private String name;
 
-	@JsonIgnore
-	private long tvdbId;
+	public Writer(String name) {
+		this.name = name;
+	}
 
-	@JsonIgnore
-	@ManyToOne
-	private Series series;
-
-	private long episodeNumber;
-
-	private String episodeName;
-
-	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Actor> guestStars;
-
-	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Writer> writers;
-
-	@ManyToMany
-	@Cascade(CascadeType.PERSIST)
-	private List<Director> directors;
-
-	@Lob
-	private String overview;
-
-	private Date lastUpdated;
-
-	private String imdbId;
-
-	private String thumbFilename;
-
-	private int thumbnailHeight;
-
-	private int thumbnailWidth;
 }

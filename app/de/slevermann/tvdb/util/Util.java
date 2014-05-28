@@ -30,10 +30,12 @@
 
 package de.slevermann.tvdb.util;
 
+import de.slevermann.tvdb.models.Actor;
+import de.slevermann.tvdb.models.Director;
 import de.slevermann.tvdb.models.Episode;
 import de.slevermann.tvdb.models.Genre;
-import de.slevermann.tvdb.models.Person;
 import de.slevermann.tvdb.models.Series;
+import de.slevermann.tvdb.models.Writer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -141,10 +143,10 @@ public class Util {
 					episode.setTvdbId(Long.parseLong(childValue));
 					break;
 				case "Director":
-					episode.setDirectors(namesToPersons(unPipeStringList(childValue)));
+					episode.setDirectors(namesToDirectors(unPipeStringList(childValue)));
 					break;
 				case "GuestStars":
-					episode.setGuestStars(namesToPersons(unPipeStringList(childValue)));
+					episode.setGuestStars(namesToActors(unPipeStringList(childValue)));
 					break;
 				case "IMDB_ID":
 					episode.setImdbId(childValue);
@@ -156,7 +158,7 @@ public class Util {
 					episode.setOverview(childValue);
 					break;
 				case "Writer":
-					episode.setWriters(namesToPersons(unPipeStringList(childValue)));
+					episode.setWriters(namesToWriters(unPipeStringList(childValue)));
 					break;
 				case "filename":
 					episode.setThumbFilename(childValue);
@@ -185,7 +187,7 @@ public class Util {
 					series.setTvdbId(Long.parseLong(childValue));
 					break;
 				case "Actors":
-					series.setActors(namesToPersons(unPipeStringList(childValue)));
+					series.setActors(namesToActors(unPipeStringList(childValue)));
 					break;
 				case "Genre":
 					series.setGenres(namesToGenres(unPipeStringList(childValue)));
@@ -213,9 +215,18 @@ public class Util {
 		return series;
 	}
 
-	private static List<Person> namesToPersons(List<String> names) {
-		return names.parallelStream().map(Person::new).collect(Collectors.toList());
+	private static List<Actor> namesToActors(List<String> names) {
+		return names.parallelStream().map(Actor::new).collect(Collectors.toList());
 	}
+
+	private static List<Writer> namesToWriters(List<String> names) {
+		return names.parallelStream().map(Writer::new).collect(Collectors.toList());
+	}
+
+	private static List<Director> namesToDirectors(List<String> names) {
+		return names.parallelStream().map(Director::new).collect(Collectors.toList());
+	}
+
 
 	private static List<Genre> namesToGenres(List<String> names) {
 		return names.parallelStream().map(Genre::new).collect(Collectors.toList());

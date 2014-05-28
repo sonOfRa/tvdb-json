@@ -41,6 +41,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -69,17 +70,14 @@ public class Series {
 	private long tvdbId;
 
 	@OneToMany
-	@JoinColumn(name="id")
 	@Cascade(CascadeType.PERSIST)
 	private List<Episode> episodes;
 
-	@OneToMany
-	@JoinColumn(name="id")
+	@ManyToMany
 	@Cascade(CascadeType.PERSIST)
-	private List<Person> actors;
+	private List<Actor> actors;
 
-	@OneToMany
-	@JoinColumn(name="id")
+	@ManyToMany
 	@Cascade(CascadeType.PERSIST)
 	private List<Genre> genres;
 
