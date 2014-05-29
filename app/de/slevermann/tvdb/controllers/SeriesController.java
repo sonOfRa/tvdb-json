@@ -99,7 +99,7 @@ public class SeriesController extends BaseController {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			return ok(objectMapper.writeValueAsString(result));
+			return ok(objectMapper.writerWithView(Object.class).writeValueAsString(result));
 		} catch (JsonProcessingException e) {
 			return internalServerError();
 		}
