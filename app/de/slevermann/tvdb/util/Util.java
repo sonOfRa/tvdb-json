@@ -45,6 +45,8 @@ import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -240,19 +242,75 @@ public class Util {
 	public static void persistSeries(Series series) {
 		EntityManager em = JPA.em();
 		Set<Episode> episodes = series.getEpisodes();
-		Set<Actor> actors = new HashSet<>(series.getActors());
-		Set<Director> directors = new HashSet<>();
-		Set<Writer> writers = new HashSet<>();
-		for (Episode ep : episodes) {
-			actors.addAll(ep.getGuestStars());
-			directors.addAll(ep.getDirectors());
-			writers.addAll(ep.getWriters());
+
+		Set<Actor> managedActors = series.getActors().stream().map(Util::mergeActor).collect(Collectors.toSet());
+		series.setActors(managedActors);
+
+		for (Episode e : episodes) {
+			Set<Actor> managedGuestStars = e.getGuestStars().stream().map(Util::mergeActor).collect(Collectors.toSet());
+			e.setGuestStars(managedGuestStars);
+			Set<Director> managedDirectors = e.getDirectors().stream().map(Util::mergeDirector).collect(Collectors.toSet());
+			e.setDirectors(managedDirectors);
+			Set<Writer> managedWriters = e.getWriters().stream().map(Util::mergeWriter).collect(Collectors.toSet());
+			e.setWriters(managedWriters);
 		}
 
-		actors.forEach(em::persist);
-		writers.forEach(em::persist);
-		directors.forEach(em::persist);
-		episodes.forEach(em::persist);
 		em.persist(series);
 	}
+
+	@Transactional
+	public static Actor mergeActor(Actor actor) {
+		EntityManager em = JPA.em();
+
+		if (actor.getId() != null) {
+			return em.merge(actor);
+		}
+		TypedQuery<Actor> q = em.createQuery("select a from Actor a where a.name like :name", Actor.class);
+		q.setParameter("name", actor.getName());
+
+		Actor a;
+		try {
+			return q.getSingleResult();
+		} catch (NoResultException e) {
+			em.persist(actor);
+			return actor;
+		}
+	}
+
+	@Transactional
+	public static Director mergeDirector(Director director) {
+		EntityManager em = JPA.em();
+
+		if (director.getId() != null) {
+			return em.merge(director);
+		}
+		TypedQuery<Director> q = em.createQuery("select d from Director d where d.name like :name", Director.class);
+		q.setParameter("name", director.getName());
+
+		try {
+			return q.getSingleResult();
+		} catch (NoResultException e) {
+			em.persist(director);
+			return director;
+		}
+	}
+
+	@Transactional
+	public static Writer mergeWriter(Writer writer) {
+		EntityManager em = JPA.em();
+
+		if (writer.getId() != null) {
+			return em.merge(writer);
+		}
+		TypedQuery<Writer> q = em.createQuery("select w from Writer w where w.name like :name", Writer.class);
+		q.setParameter("name", writer.getName());
+
+		try {
+			return q.getSingleResult();
+		} catch (NoResultException e) {
+			em.persist(writer);
+			return writer;
+		}
+	}
+
 }

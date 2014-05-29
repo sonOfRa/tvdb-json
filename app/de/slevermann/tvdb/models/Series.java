@@ -71,6 +71,7 @@ public class Series {
 	private long tvdbId;
 
 	@OneToMany
+	@Cascade(CascadeType.PERSIST)
 	private Set<Episode> episodes;
 
 	@ManyToMany
