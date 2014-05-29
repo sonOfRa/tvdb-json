@@ -322,8 +322,8 @@ public class Util {
 		if (genre.getId() != null) {
 			return em.merge(genre);
 		}
-		TypedQuery<Genre> q = em.createQuery("select g from Genre g where g.name like :name", Genre.class);
-		q.setParameter("name", genre.getGenre());
+		TypedQuery<Genre> q = em.createQuery("select g from Genre g where g.genre like :genre", Genre.class);
+		q.setParameter("genre", genre.getGenre());
 
 		try {
 			return q.getSingleResult();
