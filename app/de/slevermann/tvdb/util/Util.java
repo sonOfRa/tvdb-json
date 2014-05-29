@@ -270,7 +270,6 @@ public class Util {
 		TypedQuery<Actor> q = em.createQuery("select a from Actor a where a.name like :name", Actor.class);
 		q.setParameter("name", actor.getName());
 
-		Actor a;
 		try {
 			return q.getSingleResult();
 		} catch (NoResultException e) {
@@ -332,6 +331,4 @@ public class Util {
 			return genre;
 		}
 	}
-
-
 }

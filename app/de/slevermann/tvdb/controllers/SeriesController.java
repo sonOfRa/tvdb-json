@@ -30,6 +30,20 @@
 
 package de.slevermann.tvdb.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.slevermann.tvdb.models.JacksonViews;
+import de.slevermann.tvdb.models.Series;
+import play.Logger;
+import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
+import play.mvc.Result;
+
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Controller for Series-related Actions
  *
@@ -37,4 +51,56 @@ package de.slevermann.tvdb.controllers;
  */
 public class SeriesController extends BaseController {
 
+	@Transactional(readOnly = true)
+	public static Result series(Long id) {
+		Series series = JPA.em().find(Series.class, id);
+
+		if (series == null) {
+			return notFound();
+		} else {
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				return ok(objectMapper.writeValueAsString(series));
+			} catch (JsonProcessingException e) {
+				Logger.error("Failed to create JSON:", e);
+				return internalServerError();
+			}
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public static Result seriesWithEpisodes(Long id) {
+		Series series = JPA.em().find(Series.class, id);
+
+		if (series == null) {
+			return notFound();
+		} else {
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				return ok(objectMapper.writerWithView(JacksonViews.SeriesWithEpisodesView.class).writeValueAsString(series));
+			} catch (JsonProcessingException e) {
+				Logger.error("Failed to create JSON:", e);
+				return internalServerError();
+			}
+		}
+	}
+
+	public static Result searchSeries(String name) {
+		TypedQuery<Series> q = JPA.em().createQuery("select s from Series s where s.name like :name", Series.class);
+		q.setParameter("name", "%" + name + "%");
+
+		List<Series> result;
+		try {
+			result = q.getResultList();
+		} catch (NoResultException e) {
+			result = new ArrayList<>();
+		}
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			return ok(objectMapper.writeValueAsString(result));
+		} catch (JsonProcessingException e) {
+			return internalServerError();
+		}
+	}
 }

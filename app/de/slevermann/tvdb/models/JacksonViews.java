@@ -30,66 +30,11 @@
 
 package de.slevermann.tvdb.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-
 /**
- * Series representation
- *
- * @author Simon Levermann
+ * Created by simon on 29.05.2014.
  */
-@Data
-@NoArgsConstructor
-@Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"tvdbId", "language"})})
-public class Series {
+public class JacksonViews {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String language;
-
-	@JsonIgnore
-	private long tvdbId;
-
-	@OneToMany
-	@Cascade(CascadeType.PERSIST)
-	@JsonView(JacksonViews.SeriesWithEpisodesView.class)
-	private Set<Episode> episodes;
-
-	@ManyToMany
-	private Set<Actor> actors;
-
-	@ManyToMany
-	private Set<Genre> genres;
-
-	@Lob
-	private String overview;
-
-	private String name;
-
-	private String bannerFilename;
-
-	private Date lastUpdated;
-
-	private String imdbId;
+	public static class SeriesWithEpisodesView {
+	}
 }
