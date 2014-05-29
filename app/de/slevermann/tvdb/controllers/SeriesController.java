@@ -60,7 +60,7 @@ public class SeriesController extends BaseController {
 		} else {
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
-				return ok(objectMapper.writeValueAsString(series));
+				return ok(objectMapper.writerWithView(Object.class).writeValueAsString(series));
 			} catch (JsonProcessingException e) {
 				Logger.error("Failed to create JSON:", e);
 				return internalServerError();
