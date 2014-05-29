@@ -101,6 +101,7 @@ public class SeriesController extends BaseController {
 		try {
 			return ok(objectMapper.writerWithView(Object.class).writeValueAsString(result));
 		} catch (JsonProcessingException e) {
+			Logger.error("Failed to create JSON", e);
 			return internalServerError();
 		}
 	}

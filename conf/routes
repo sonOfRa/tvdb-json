@@ -5,3 +5,5 @@ GET        /stargate              de.slevermann.tvdb.controllers.Application.sta
 GET        /series/:id            de.slevermann.tvdb.controllers.SeriesController.series(id : Long)
 GET        /fullseries/:id        de.slevermann.tvdb.controllers.SeriesController.seriesWithEpisodes(id : Long)
 GET        /search/:name          de.slevermann.tvdb.controllers.SeriesController.searchSeries(name : String)
+GET        /episodes/:id          de.slevermann.tvdb.controllers.EpisodeController.episodesForSeries(id : Long)
+GET		/episode/:id				de.slevermann.tvdb.controllers.EpisodeController.episode(id : Long)

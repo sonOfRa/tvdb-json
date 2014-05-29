@@ -34,10 +34,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.slevermann.tvdb.models.Episode;
 import de.slevermann.tvdb.models.Series;
+import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -71,6 +73,41 @@ public class EpisodeController extends BaseController {
 			return ok(mapper.writeValueAsString(episodes));
 		} catch (JsonProcessingException e) {
 			return internalServerError();
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public static Result episodesForSeries(Long id) {
+		TypedQuery<Episode> q = JPA.em().createQuery("select e from Episode e where e.series.id = :id", Episode.class);
+		q.setParameter("id", id);
+
+		try {
+			List<Episode> episodes = q.getResultList();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			return ok(objectMapper.writeValueAsString(episodes));
+		} catch (NoResultException e) {
+			return notFound();
+		} catch (JsonProcessingException e) {
+			Logger.error("Failed to create JSON", e);
+			return internalServerError();
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public static Result episode(Long id) {
+		Episode episode = JPA.em().find(Episode.class, id);
+
+		if (episode == null) {
+			return notFound();
+		} else {
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				return ok(objectMapper.writeValueAsString(episode));
+			} catch (JsonProcessingException e) {
+				Logger.error("Failed to create JSON", e);
+				return internalServerError();
+			}
 		}
 	}
 }
