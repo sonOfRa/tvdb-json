@@ -245,6 +245,8 @@ public class Util {
 
 		Set<Actor> managedActors = series.getActors().stream().map(Util::mergeActor).collect(Collectors.toSet());
 		series.setActors(managedActors);
+		Set<Genre> managedGenres = series.getGenres().stream().map(Util::mergeGenre).collect(Collectors.toSet());
+		series.setGenres(managedGenres);
 
 		for (Episode e : episodes) {
 			Set<Actor> managedGuestStars = e.getGuestStars().stream().map(Util::mergeActor).collect(Collectors.toSet());
@@ -312,5 +314,24 @@ public class Util {
 			return writer;
 		}
 	}
+
+	@Transactional
+	public static Genre mergeGenre(Genre genre) {
+		EntityManager em = JPA.em();
+
+		if (genre.getId() != null) {
+			return em.merge(genre);
+		}
+		TypedQuery<Genre> q = em.createQuery("select g from Genre g where g.name like :name", Genre.class);
+		q.setParameter("name", genre.getGenre());
+
+		try {
+			return q.getSingleResult();
+		} catch (NoResultException e) {
+			em.persist(genre);
+			return genre;
+		}
+	}
+
 
 }
