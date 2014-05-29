@@ -249,10 +249,10 @@ public class Util {
 			writers.addAll(ep.getWriters());
 		}
 
-		actors.forEach(em::merge);
-		writers.forEach(em::merge);
-		directors.forEach(em::merge);
-		episodes.forEach(em::merge);
-		em.merge(series);
+		actors.forEach(em::persist);
+		writers.forEach(em::persist);
+		directors.forEach(em::persist);
+		episodes.forEach(em::persist);
+		em.persist(series);
 	}
 }
