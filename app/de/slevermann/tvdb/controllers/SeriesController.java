@@ -85,6 +85,7 @@ public class SeriesController extends BaseController {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public static Result searchSeries(String name) {
 		TypedQuery<Series> q = JPA.em().createQuery("select s from Series s where s.name like :name", Series.class);
 		q.setParameter("name", "%" + name + "%");
